@@ -19,6 +19,7 @@ from handlers import bot_management_handler # handlers for admins and managers
 bot = telebot.TeleBot(os.getenv("BOT_TOKEN")) # init telebot 
 logger = telebot.logger # logs for telebot
 admin_cid = os.getenv("ADMIN_CID") # get cid of admin
+last_message_id = 0
 
 # Init handler vars
 
@@ -29,7 +30,26 @@ manager = bot_management_handler.Manager(bot) # manager handlers
 # Init databases
 
 client_db = database.DataBase("users")
+banned_db = database.DataBase("banned")
 manager_db = database.DataBase("managers")
+
+# Work with telegram api
+
+@bot.message_handler(commands = ['start'])
+def bot_start(message):
+    clients = client_db._get_list()
+    banned = banned_db._get_list()
+    managers = manager_db._get_list()
+    uid = message.from_user.userid
+
+@bot.message_handler(commands = ['help'])
+def bot_help(message):
+    bot.edit_message_text(chat_id=message.chat.id, text=bot_says.help, message_id=last_message_id)
+    last_message_id = message.id
+
+@bot.message_handler(func=lambda call: True)
+def bot_work_handler(message):
+    pass
 
 # Start bot
 
