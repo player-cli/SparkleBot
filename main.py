@@ -18,12 +18,18 @@ from handlers import bot_management_handler # handlers for admins and managers
 
 bot = telebot.TeleBot(os.getenv("BOT_TOKEN")) # init telebot 
 logger = telebot.logger # logs for telebot
+admin_cid = os.getenv("ADMIN_CID") # get cid of admin
 
 # Init handler vars
 
 client = bot_client_handler.Client(bot) # client handlers
 admin = bot_management_handler.Admin(bot) # admin handlers
 manager = bot_management_handler.Manager(bot) # manager handlers
+
+# Init databases
+
+client_db = database.DataBase("users")
+manager_db = database.DataBase("managers")
 
 # Start bot
 
