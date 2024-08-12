@@ -19,7 +19,7 @@ from handlers import bot_management_handler # handlers for admins and managers
 bot = telebot.TeleBot(os.getenv("BOT_TOKEN")) # init telebot 
 logger = telebot.logger # logs for telebot
 admin_cid = os.getenv("ADMIN_CID") # get cid of admin
-last_message_id = 0
+
 
 # Init handler vars
 
@@ -40,12 +40,25 @@ def bot_start(message):
     clients = client_db._get_list()
     banned = banned_db._get_list()
     managers = manager_db._get_list()
-    uid = message.from_user.userid
+    uid = message.from_user.id
+    cid = message.chat.id
+    user = [cid, uid]
+    if cid != admin_cid:
+        if user in banned:
+            bot.send_message(message.chat.id, text = f"Пользователь {message.from_user.id}, вы не можете пользоваться данным ботом так как вы забанены!")
+        else:
+            if user in managers:
+                bot.send_message(message.chat.id, text = f"Добро пожаловать {message.from_user.username}:{message.from_user.id}, вы являетесь менеджером!", )
+            else:
+                pass
+    else:
+        pass
+
 
 @bot.message_handler(commands = ['help'])
 def bot_help(message):
-    bot.edit_message_text(chat_id=message.chat.id, text=bot_says.help, message_id=last_message_id)
-    last_message_id = message.id
+    bot.send_message(message.chat.id, text=bot_says.help)
+    
 
 @bot.message_handler(func=lambda call: True)
 def bot_work_handler(message):
