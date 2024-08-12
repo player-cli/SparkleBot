@@ -16,9 +16,9 @@ from handlers import bot_management_handler # handlers for admins and managers
 
 # Init main vars
 
-bot = telebot.TeleBot(os.getenv("BOT_TOKEN")) # init telebot 
+bot = telebot.TeleBot(os.getenv("TOKEN")) # init telebot 
 logger = telebot.logger # logs for telebot
-admin_cid = os.getenv("ADMIN_CID") # get cid of admin
+admin_cid = int(os.getenv("ADMIN_CID")) # get cid of admin
 
 
 # Init handler vars
@@ -44,17 +44,17 @@ def bot_start(message):
     cid = message.chat.id
     user = [cid, uid]
     if cid != admin_cid:
-        if user in banned:
-            bot.send_message(message.chat.id, text = f"Пользователь {message.from_user.id}, вы не можете пользоваться данным ботом так как вы забанены!")
-        else:
-            if user in managers:
-                bot.send_message(message.chat.id, text = f"Добро пожаловать {message.from_user.username}:{message.from_user.id}, вы являетесь менеджером!", reply_markup = bot_keyboard.manager_keyboard)
-            else:
-                if user in clients:
-                    bot.send_message(message.chat.id, text = bot_says.start, reply_markup = bot_keyboard.client_keyboard)
+        if user not in banned:
+                if user not in managers:
+                    if user in clients:
+                        bot.send_message(message.chat.id, text = bot_says.start, reply_markup = bot_keyboard.client_keyboard)
+                    else:
+                        client_db._add(cid, uid)
+                        bot.send_message(message.chat.id, text = bot_says.start, reply_markup = bot_keyboard.client_keyboard)
                 else:
-                    client_db._add(cid, uid)
-                    bot.send_message(message.chat.id, text = bot_says.start, reply_markup = bot_keyboard.client_keyboard)
+                    bot.send_message(message.chat.id, text = f"Добро пожаловать {message.from_user.username}:{message.from_user.id}, вы являетесь менеджером!", reply_markup = bot_keyboard.manager_keyboard)
+        else:
+            bot.send_message(message.chat.id, text = f"Пользователь {message.from_user.id}, вы не можете пользоваться данным ботом так как вы забанены!")
     else:
         bot.send_message(message.chat.id, text = f"Добро пожаловать {message.from_user.username}:{message.from_user.id}, вы являетесь администратором!", reply_markup = bot_keyboard.admin_keyboard)
 
@@ -62,7 +62,14 @@ def bot_start(message):
 @bot.message_handler(commands = ['help'])
 def bot_help(message):
     bot.send_message(message.chat.id, text=bot_says.help)
-    
+
+@bot.message_handler(commands = ['devel'])
+def bot_devel(message):
+    bot.send_message(message.chat.id, text="Бот создал @player_cli")
+
+@bot.message_handler(func=lambda m: True)
+def bot_work_handler(message):
+    pass
 
 @bot.message_handler(func=lambda call: True)
 def bot_work_handler(message):
@@ -83,8 +90,7 @@ def main() -> int: # press "F" C++
     #             ░                 ░  ░   ░     ░  ░       ░  ░   ░  ░    ░          ░ ░                   #
     #                                                                           ░                           #
     """) # da.
-    telebot.logger.basicConfig(filename=f'./logs/{time.strptime}.log', level=logging.DEBUG,
-                    format=' %(asctime)s - %(levelname)s - %(message)s')
+    logging.basicConfig(level=logging.DEBUG, format=' %(asctime)s - %(levelname)s - %(message)s')
     bot.polling() # start bot
 
 if __name__ == "__main__": # need
