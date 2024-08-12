@@ -9,11 +9,11 @@ class DataBase:
 
     def _add(self, chat_id: int, user_id) -> None:
         self.cursor.execute(f"INSERT INTO {self.table_name} (chat_id, user_id) VALUES (?, ?)", (chat_id, user_id))
-        self.db.commit()
+        self.base.commit()
 
     def _remove(self, user_id) -> None:
         self.cursor.execute(f"DELETE FROM {self.table_name} WHERE user_id = (?)", (user_id))
-        self.db.commit()
+        self.base.commit()
 
     def _get_list(self) -> list:
         self.cursor.execute(f"SELECT * FROM {self.table_name}")
@@ -21,12 +21,6 @@ class DataBase:
         return [[x[1], x[2]] for x in row]
 
     def _ban(self, chat_id: int, user_id) -> None:
-        self.cursor.execute("""
-            INSERT INTO banned (chat_id, user_id)
-            SELECT chat_id, user_id
-            FROM users
-            WHERE user_id = (?)
-            RETURNING *;
-            DELETE FROM users
-            WHERE user_id = (SELECT user_id FROM banned WHERE user_id = (?));
-        """, (user_id, user_id))
+        self.cursor.execute("INSERT INTO banned (chat_id, user_id) VALUES (?,?)", (chat_id, user_id))
+        self.cursor.execute(f"DELETE FROM users WHERE user_id = (?)", (user_id))
+        self.base.commit()
