@@ -4,7 +4,6 @@ client_keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True, input_field_pl
 client_keyboard.row(types.KeyboardButton(text='Заказать самостоятельно'))
 client_keyboard.row(types.KeyboardButton(text='Заказать через менеджера'))
 client_keyboard.row(types.KeyboardButton(text='Химчистка'))
-client_keyboard.row(types.KeyboardButton(text='Задать вопрос'))
 
 manager_keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True, input_field_placeholder="Выберите действие")
 manager_keyboard.row(types.KeyboardButton('Забанить пользователя'))
