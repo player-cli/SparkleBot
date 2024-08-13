@@ -31,7 +31,6 @@ client = bot_client_handler.Client(bot, admin_cid, manager_db._get_list()) # cli
 admin = bot_management_handler.Admin(bot) # admin handlers
 manager = bot_management_handler.Manager(bot) # manager handlers
 
-last_message_id = 0
 
 # Work with telegram api
 
@@ -69,7 +68,6 @@ def bot_devel(message):
 
 @bot.message_handler(func=lambda m: True)
 def bot_work_handler(message):
-    clients = client_db._get_list()
     banned = banned_db._get_list()
     managers = manager_db._get_list()
     cid = message.chat.id
@@ -77,8 +75,12 @@ def bot_work_handler(message):
     user = [cid, uid]
     if cid != admin_cid and user not in managers and user not in banned:
         match(message.text):
-            case 'Назад':
-                bot.send_message(message.chat.id, text = bot_says.start, reply_markup = bot_keyboard.client_keyboard)
+            case 'Заказать самостоятельно':
+                client._self_order(message)
+            case 'Заказать через менеджера':
+                client._manager_order(message)
+            case 'Химчистка':
+                client._shoes_clean(message)
             case _:
                 bot.send_message(cid, "Нет такой команды!")
     if user in managers and user not in banned:
