@@ -21,7 +21,7 @@ class Client:
         self.bot.register_next_step_handler(message, self.__manager_order_choose)
 
     def _shoes_clean(self, message):
-        self.bot.send_message(message.chat.id, bot_says.shoesclean, reply_markup = bot_keyboard.startup_bot_keyboard)
+        self.bot.send_message(message.chat.id, bot_says.shoesclean, reply_markup = bot_keyboard.clean_keyboard)
         self.bot.register_next_step_handler(message, self.__shoes_clean_choose)
 
     def __forward_to_manager(self, message):

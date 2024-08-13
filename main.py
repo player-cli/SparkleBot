@@ -17,7 +17,7 @@ from handlers import bot_management_handler # handlers for admins and managers
 
 bot = telebot.TeleBot(os.getenv("TOKEN")) # init telebot 
 logger = telebot.logger # logs for telebot
-admin_cid = int(os.getenv("ADMIN_CID")) # get cid of admin
+admin_cid = 0#int(os.getenv("ADMIN_CID")) # get cid of admin
 
 # Init databases
 

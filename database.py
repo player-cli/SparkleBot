@@ -20,7 +20,7 @@ class DataBase:
         row = self.cursor.fetchall()
         return [[x[1], x[2]] for x in row]
 
-    def _ban(self, cid: int, uid) -> None:
+    def _ban(self, cid: int, uid: int) -> None:
         self.cursor.execute("INSERT INTO banned (cid, uid) VALUES (?,?)", (cid, uid))
         self.cursor.execute(f"DELETE FROM users WHERE uid = (?)", (uid))
         self.base.commit()

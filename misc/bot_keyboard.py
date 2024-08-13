@@ -7,7 +7,6 @@ client_keyboard.row(types.KeyboardButton(text='Химчистка'))
 
 manager_keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True, input_field_placeholder="Выберите действие")
 manager_keyboard.row(types.KeyboardButton('Забанить пользователя'))
-manager_keyboard.row(types.KeyboardButton('Статистика'))
 
 admin_keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True, input_field_placeholder="Выберите действие")
 admin_keyboard.row(types.KeyboardButton('Добавить менеджера'))
