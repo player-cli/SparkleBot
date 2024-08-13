@@ -5,13 +5,9 @@ client_keyboard.row(types.KeyboardButton(text='Заказать самостоя
 client_keyboard.row(types.KeyboardButton(text='Заказать через менеджера'))
 client_keyboard.row(types.KeyboardButton(text='Химчистка'))
 
-manager_keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True, input_field_placeholder="Выберите действие")
-manager_keyboard.row(types.KeyboardButton('Забанить пользователя'))
-
 admin_keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True, input_field_placeholder="Выберите действие")
 admin_keyboard.row(types.KeyboardButton('Добавить менеджера'))
 admin_keyboard.row(types.KeyboardButton('Убрать менеджера'))
-manager_keyboard.row(types.KeyboardButton('Забанить пользователя'))
 admin_keyboard.row(types.KeyboardButton('Статистика'))
 
 self_order_keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True, input_field_placeholder="Выберите действие")

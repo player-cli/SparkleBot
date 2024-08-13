@@ -1,3 +1,4 @@
+import os
 import time
 import random
 
@@ -17,7 +18,7 @@ class Client:
         self.bot.register_next_step_handler(message, self.__self_order_choose)
 
     def _manager_order(self, message):
-        self.bot.send_message(message.chat.id, "Вы хотели бы оставить заявку для заказа из Китая с помощью менеджера?", reply_markup = bot_keyboard.self_order_keyboard)
+        self.bot.send_message(message.chat.id, "Вы хотели бы оставить заявку для заказа из Китая с помощью менеджера?", reply_markup = bot_keyboard.manager_order_keyboard)
         self.bot.register_next_step_handler(message, self.__manager_order_choose)
 
     def _shoes_clean(self, message):
@@ -50,8 +51,14 @@ class Client:
             self.bot.send_message(self.admin, text = f"Заявка по кроссовкам от @{message.from_user.username}")
             time.sleep(0.5)
             self.bot.send_message(message.chat.id, text = bot_says.start, reply_markup = bot_keyboard.client_keyboard)
+        if message.text == 'Примеры чистки':
+            img = open("/home/player/code/SparkleBot/handlers/example.jpg", "rb")
+            self.bot.send_photo(message.chat.id, img, caption = "Пример работы по химчистке")
+            self.bot.register_next_step_handler(message, self.__self_order_choose)
         if message.text == 'Назад':
             self.bot.send_message(message.chat.id, text = bot_says.start, reply_markup = bot_keyboard.client_keyboard)
+
+
         
 
 

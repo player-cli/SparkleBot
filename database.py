@@ -11,16 +11,11 @@ class DataBase:
         self.cursor.execute(f"INSERT INTO {self.table_name} (cid, uid) VALUES (?, ?)", (cid, uid))
         self.base.commit()
 
-    def _remove(self, uid) -> None:
-        self.cursor.execute(f"DELETE FROM {self.table_name} WHERE uid = (?)", (uid))
+    def _remove(self, cid: int) -> None:
+        self.cursor.execute(f"DELETE FROM {self.table_name} WHERE cid = (?)", (int(cid)))
         self.base.commit()
 
     def _get_list(self) -> list:
         self.cursor.execute(f"SELECT * FROM {self.table_name}")
         row = self.cursor.fetchall()
         return [[x[1], x[2]] for x in row]
-
-    def _ban(self, cid: int, uid: int) -> None:
-        self.cursor.execute("INSERT INTO banned (cid, uid) VALUES (?,?)", (cid, uid))
-        self.cursor.execute(f"DELETE FROM users WHERE uid = (?)", (uid))
-        self.base.commit()

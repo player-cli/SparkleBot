@@ -17,33 +17,31 @@ from handlers import bot_management_handler # handlers for admins and managers
 
 bot = telebot.TeleBot(os.getenv("TOKEN")) # init telebot 
 logger = telebot.logger # logs for telebot
-admin_cid = 0#int(os.getenv("ADMIN_CID")) # get cid of admin
+admin_cid = int(os.getenv("ADMIN_CID")) # get cid of admin
 
 # Init databases
 
 client_db = database.DataBase("users")
-banned_db = database.DataBase("banned")
 manager_db = database.DataBase("managers")
 
 # Init handler vars
 
 client = bot_client_handler.Client(bot, admin_cid, manager_db._get_list()) # client handlers
 admin = bot_management_handler.Admin(bot) # admin handlers
-manager = bot_management_handler.Manager(bot) # manager handlers
-
 
 # Work with telegram api
 
 @bot.message_handler(commands = ['start'])
 def bot_start(message):
     clients = client_db._get_list()
-    banned = banned_db._get_list()
     managers = manager_db._get_list()
     uid = message.from_user.id
     cid = message.chat.id
     user = [cid, uid]
-    if cid != admin_cid:
-        if user not in banned:
+    if not message.from_user.username:
+        bot.send_message(message.chat.id, "Для корректной работы бота вам необходимо установить user id!")
+    else:
+        if cid != admin_cid:
                 if user not in managers:
                     if user in clients:
                         bot.send_message(message.chat.id, text = bot_says.start, reply_markup = bot_keyboard.client_keyboard)
@@ -51,11 +49,10 @@ def bot_start(message):
                         client_db._add(cid, uid)
                         bot.send_message(message.chat.id, text = bot_says.start, reply_markup = bot_keyboard.client_keyboard)
                 else:
-                    bot.send_message(message.chat.id, text = f"Добро пожаловать {message.from_user.username}:{message.from_user.id}, вы являетесь менеджером!", reply_markup = bot_keyboard.manager_keyboard)
+                    bot.send_message(message.chat.id, text = f"Добро пожаловать {message.from_user.username}:{message.from_user.id}, вы являетесь менеджером!")
+            
         else:
-            bot.send_message(message.chat.id, text = f"Пользователь {message.from_user.id}, вы не можете пользоваться данным ботом так как вы забанены!")
-    else:
-        bot.send_message(message.chat.id, text = f"Добро пожаловать {message.from_user.username}:{message.from_user.id}, вы являетесь администратором!", reply_markup = bot_keyboard.admin_keyboard)
+            bot.send_message(message.chat.id, text = f"Добро пожаловать {message.from_user.username}:{message.from_user.id}, вы являетесь администратором!", reply_markup = bot_keyboard.admin_keyboard)
 
 
 @bot.message_handler(commands = ['help'])
@@ -68,12 +65,11 @@ def bot_devel(message):
 
 @bot.message_handler(func=lambda m: True)
 def bot_work_handler(message):
-    banned = banned_db._get_list()
     managers = manager_db._get_list()
     cid = message.chat.id
     uid = message.from_user.id
     user = [cid, uid]
-    if cid != admin_cid and user not in managers and user not in banned:
+    if cid != admin_cid and user not in managers:
         match(message.text):
             case 'Заказать самостоятельно':
                 client._self_order(message)
@@ -81,24 +77,24 @@ def bot_work_handler(message):
                 client._manager_order(message)
             case 'Химчистка':
                 client._shoes_clean(message)
+            case 'Назад':
+                bot.send_message(message.chat.id, text = bot_says.start, reply_markup = bot_keyboard.client_keyboard)
             case _:
                 bot.send_message(cid, "Нет такой команды!")
-    if user in managers and user not in banned:
+    if user in managers and user:
         match(message.text):
-            case 'Назад':
-                bot.send_message(message.chat.id, text = f"Добро пожаловать {message.from_user.username}:{message.from_user.id}, вы являетесь менеджером!", reply_markup = bot_keyboard.manager_keyboard)
             case _:
                 bot.send_message(cid, "Нет такой команды!")
     if cid == admin_cid:
         match(message.text):
-            case 'Назад':
-                bot.send_message(message.chat.id, text = f"Добро пожаловать {message.from_user.username}:{message.from_user.id}, вы являетесь администратором!", reply_markup = bot_keyboard.admin_keyboard)
+            case 'Добавить менеджера':
+                admin._add_manager(message)
+            case 'Убрать менеджера':
+                admin._remove_manager(message)
+            case 'Статистика':
+                admin._stats(message)
             case _:
                 bot.send_message(cid, "Нет такой команды!")
-    if user in banned:
-        bot.send_message(cid, "У вас нет прав пользоваться данным ботом так как вас забанил менеджер/администратор",reply_markup = None)
-
-
 
 # Start bot
 
